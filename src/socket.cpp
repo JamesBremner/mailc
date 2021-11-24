@@ -145,6 +145,7 @@ bool Socket::send(const std::string &s) {
     ERR_print_errors_fp(stderr);
     return false;
   }
+  return true;
 }
 
 std::string Socket::receive() {

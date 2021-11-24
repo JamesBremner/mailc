@@ -10,12 +10,8 @@
 #include <string>
 #include <tuple>
 
-#include <sys/socket.h>
+#include <winsock2.h>
 #include <sys/types.h>
-
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <netinet/in.h>
 
 #include <openssl/crypto.h>
 #include <openssl/err.h>

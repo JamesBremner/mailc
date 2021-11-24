@@ -6,9 +6,6 @@
 #include "imap.h"
 #include "smtp.h"
 
-#include <readline/history.h>
-#include <readline/readline.h>
-
 /**
  * @brief Vocabulory that will be used by readline
  */
@@ -17,16 +14,6 @@ std::vector<std::string> vocabulory{"help",   "send",     "quit",   "read",
                                     "create", "deletemb", "rename", "move",
                                     "noop"};
 
-/**
- * @brief Command completion function
- * @details This function will be called by readline library
- *
- * @param text Current text input by user
- * @param start Start index
- * @param end End index
- * @return Array of matching commands
- */
-char **command_completion(const char *text, int start, int end);
 
 /**
  * @brief The mail functiom
@@ -37,13 +24,7 @@ char **command_completion(const char *text, int start, int end);
  * @return Returns 0 on exit
  */
 int main(int argc, char **argv) {
-  if (argc > 1 && std::string(argv[1]) == "-d") {
-    rl_bind_key('\t', rl_insert);
-  }
 
-  char *buf;
-
-  rl_attempted_completion_function = command_completion;
 
   std::cout << "IMAP SMTP Mail Client" << std::endl;
   config config{993,
@@ -61,12 +42,14 @@ int main(int argc, char **argv) {
 
   std::string cmd;
 
-  while ((buf = readline("client> ")) != nullptr) {
-    cmd = std::string(buf);
-    if (cmd.size() > 0) {
-      add_history(buf);
-    }
-    free(buf);
+    if( argc != 2 ) {
+      // default to send command
+    cmd = "send";
+} else
+{
+  cmd = argv[1];
+}
+
     std::stringstream scmd(cmd);
     scmd >> cmd;
     if (cmd == "help") {
@@ -84,7 +67,7 @@ int main(int argc, char **argv) {
       std::cout << "move\t\tMove a mail to another mailbox" << std::endl;
       std::cout << "noop\t\tKeep connection open to server" << std::endl;
     } else if (cmd == "quit") {
-      break;
+      exit( 0 );
     } else if (cmd == "list") {
       auto mailboxes = cliutils::getMailboxes();
       for (const auto &mailbox : mailboxes) {
@@ -196,7 +179,7 @@ int main(int argc, char **argv) {
 
       if (cliutils::sendMail(config, to, subject, body)) {
         std::cout << "Sent mail." << std::endl;
-        sync();
+        cliutils::sync(imap);
       } else {
         std::cout << "Mail could not be sent." << std::endl;
       }
@@ -231,8 +214,7 @@ int main(int argc, char **argv) {
       std::cout << "Invalid command. Type help for valid commands."
                 << std::endl;
     }
-  }
-
+ 
   std::cout << std::endl;
 
   return 0;
@@ -272,7 +254,3 @@ char *command_generator(const char *text, int state) {
   }
 }
 
-char **command_completion(const char *text, int start, int end) {
-  rl_attempted_completion_over = 1;
-  return rl_completion_matches(text, command_generator);
-}

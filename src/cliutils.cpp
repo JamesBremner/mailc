@@ -13,19 +13,20 @@ std::string MAIL_PATH() {
 }
 
 void GetReqDirs(const std::string &path, std::vector<std::string> &dirs) {
-  DIR *dpdf;
-  struct dirent *epdf;
-  dpdf = opendir(path.c_str());
-  if (dpdf != NULL) {
-    while ((epdf = readdir(dpdf)) != NULL) {
-      if (epdf->d_type == DT_DIR && strstr(epdf->d_name, "..") == NULL &&
-          strstr(epdf->d_name, ".") == NULL) {
-        dirs.push_back((path + epdf->d_name).substr(MAIL_PATH().size()));
-        GetReqDirs(path + epdf->d_name + "/", dirs);
-      }
-    }
-  }
-  closedir(dpdf);
+    throw std::runtime_error("GetReqDirs not implemented");
+  // DIR *dpdf;
+  // struct dirent *epdf;
+  // dpdf = opendir(path.c_str());
+  // if (dpdf != NULL) {
+  //   while ((epdf = readdir(dpdf)) != NULL) {
+  //     if (epdf->d_type == DT_DIR && strstr(epdf->d_name, "..") == NULL &&
+  //         strstr(epdf->d_name, ".") == NULL) {
+  //       dirs.push_back((path + epdf->d_name).substr(MAIL_PATH().size()));
+  //       GetReqDirs(path + epdf->d_name + "/", dirs);
+  //     }
+  //   }
+  // }
+  // closedir(dpdf);
 }
 
 std::string tolowercase(const std::string &s) {
